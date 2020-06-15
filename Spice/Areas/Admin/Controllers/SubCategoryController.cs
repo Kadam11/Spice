@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,15 +16,20 @@ namespace Spice.Areas.Admin.Controllers
     [Area("Admin")]
     public class SubCategoryController : Controller
     {
-        
+        #region variables Declaration   
         [TempData]
         public string StatusMessage { get; set; }
         private readonly ApplicationDbContext _db;
+        #endregion 
 
+        #region ApplicationDbContext variable Initialized using Constructor
         public SubCategoryController(ApplicationDbContext Db)
         {
             _db = Db;
         }
+        #endregion
+
+        #region Index Action Method
 
         [Area("Admin")]
         public async Task<IActionResult> Index()
@@ -31,7 +37,9 @@ namespace Spice.Areas.Admin.Controllers
             var subCatagories = await _db.SubCategories.Include(s => s.Category).ToListAsync();
             return View(subCatagories);
         }
+        #endregion
 
+        #region Create Method 
         //GET - CREATE 
         public async Task<IActionResult> Create()
         {
@@ -75,9 +83,13 @@ namespace Spice.Areas.Admin.Controllers
                 SubCategoryList = await _db.SubCategories.OrderBy(p => p.Name).Select(p => p.Name).Distinct().ToListAsync(),
                 StatusMessage = this.StatusMessage
             };
+            vm.SubCategory = model.SubCategory;
             return View(vm);
         }
 
+        #endregion
+
+        #region method that sends Data in JSON to update SubCategory
         [ActionName("GetSubCategory")]
         public async Task<IActionResult> GetSubCategory (int id)
         {
@@ -87,6 +99,9 @@ namespace Spice.Areas.Admin.Controllers
                                                  select subCategory).ToList();
             return Json(new SelectList(subCategories,"Id","Name"));
         }
+        #endregion
+
+        #region Edit Method
 
         //GET - EDIT 
         public async Task<IActionResult> Edit(int? Id)
@@ -114,7 +129,8 @@ namespace Spice.Areas.Admin.Controllers
             return View(model);
         }
 
-        // POST - CREATE
+        
+        // POST - Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? Id, SubCategoryAndCategoryViewModel model)
@@ -147,5 +163,54 @@ namespace Spice.Areas.Admin.Controllers
             vm.SubCategory.Id = (int)Id;
             return View(vm);
         }
+        #endregion
+
+        #region Detail Method
+        public async Task<IActionResult> Detail(int? Id)
+        {
+            if (Id == null)
+            {
+                return NotFound();
+            }
+            var subCategory = await _db.SubCategories.Include(x => x.Category).SingleOrDefaultAsync(m => m.Id == Id);
+            if (subCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(subCategory);
+
+        }
+
+
+        #endregion
+
+        #region Delete Method 
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var subCategory = await _db.SubCategories.Include(s => s.Category).SingleOrDefaultAsync(m => m.Id == id);
+            if (subCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(subCategory);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var subCategory = await _db.SubCategories.SingleOrDefaultAsync(m => m.Id == id);
+            _db.SubCategories.Remove(subCategory);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
+        #endregion
     }
 }

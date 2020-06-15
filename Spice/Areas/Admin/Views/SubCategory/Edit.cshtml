@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-5">
                     @*Here we can also write asp-iteams = "(SelectList)ViewBag.CategoryList"*@
-                    <select id="ddlCategorylist" asp-for="SubCategory.CategoryId" disabled asp-items="Model.CategoryList.ToSelectListIteams<Category>(Model.SubCategory.CategoryId)" class="form-control"></select>
+                    <select id="ddlCategorylist" asp-for="SubCategory.CategoryId" disabled asp-items="Model.CategoryList.ToSelectListIteams(Model.SubCategory.CategoryId)" class="form-control"></select>
                 </div>
             </div>
             <div class="form-group row">
