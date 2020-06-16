@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-Spice-7E345E54-195B-43D8-B0F5-D5D0282B85B3</UserSecretsId>
+    <AssemblyName>l</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
